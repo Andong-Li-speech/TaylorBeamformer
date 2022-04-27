@@ -1,0 +1,159 @@
+# for loading and saving paths
+[path]
+data_type = "LibriSpeech"
+is_checkpoint = true
+is_resume_reload = false
+checkpoint_load_path = "CheckpointPath"
+checkpoint_load_filename = ""
+loss_save_path = "Loss"
+model_best_path = "BestModel"
+logging_path = "Logger"
+
+
+[path.train]
+mix_file_path = "/media/liandong/mc_dataset_create/mc_dataset/data/spk+noise_linear_6mics/pairs_40000/train/mix"
+bf_file_path = "/media/liandong/mc_dataset_create/mc_dataset/data/spk+noise_linear_6mics/pairs_40000/train/timvdr/filter_and_sum"
+target_file_path = "/media/liandong/mc_dataset_create/mc_dataset/data/spk+noise_linear_6mics/pairs_40000/train/spk"
+
+[path.val]
+mix_file_path = "/media/liandong/mc_dataset_create/mc_dataset/data/spk+noise_linear_6mics/pairs_4000/val/mix"
+bf_file_path = "/media/liandong/mc_dataset_create/mc_dataset/data/spk+noise_linear_6mics/pairs_4000/val/timvdr/filter_and_sum"
+target_file_path = "/media/liandong/mc_dataset_create/mc_dataset/data/spk+noise_linear_6mics/pairs_4000/val/spk"
+
+[gpu]
+gpu_ids = [0]
+# signal settings before sending into the network
+[signal]
+sr = 16000
+is_chunk = true
+chunk_length = 6.0
+win_size = 0.02
+win_shift = 0.01
+fft_num = 320
+is_variance_norm = true
+is_compress = true
+ref_mic = 0
+
+# choosed loss function
+[loss_function]
+path = "utils.loss"
+spatial_weight = 1.0
+spectral_weight = 1.0
+alpha = 0.5
+l_type = "L2"
+[loss_function.spatial]
+classname = "SpatialFilterLoss"
+[loss_function.spectral]
+classname = "ComMagEuclideanLoss"
+
+# choosed optimizer
+[optimizer]
+name = "adam"
+lr = 5e-4
+beta1 = 0.9
+beta2 = 0.999
+l2 = 1e-7
+gradient_norm = 5.0
+epochs = 60
+halve_lr = true
+early_stop = true
+halve_freq = 2
+early_stop_freq = 3
+print_freq = 10
+metric_options = ["ESTOI"]  # chioces: [NB-PESQ, ESTOI, SISNR]
+
+# reproducibility settings
+[reproducibility]
+seed = 1234
+
+# Dataset
+[dataset]
+[dataset.train]
+json_path = "/media/liandong/mc_dataset_create/mc_dataset/data/spk+noise_linear_6mics/pairs_40000/train/json"
+batch_size = 4
+is_check = true
+is_shuffle = true
+
+[dataset.val]
+json_path = "/media/liandong/mc_dataset_create/mc_dataset/data/spk+noise_linear_6mics/pairs_4000/val/json"
+batch_size = 4
+is_check = true
+is_shuffle = true
+
+[dataloader]
+[dataloader.train]
+num_workers = 6
+pin_memory = true
+drop_last = false
+shuffle = false
+
+[dataloader.val]
+num_workers = 6
+pin_memory = true
+drop_last = false
+shuffle = false
+
+# network configs
+[net]
+choice="TaylorBeamformer"
+path = "nets.TaylorBeamformer"
+classname = "TaylorBeamformer"
+
+[net.TaylorBeamformer.args]
+k1 = [1, 3]
+k2 = [2, 3]
+c = 64
+embed_dim = 64  # ablation study
+fft_num = 320
+order_num = 3  # ablation study
+kd1 = 5
+cd1 = 64
+d_feat = 256
+dilations = [1,2,5,9]
+group_num = 2
+hid_node = 64
+M = 6
+rnn_type = "LSTM"
+intra_connect = "cat"
+inter_connect = "cat"
+out_type = "mapping"   # ablation study
+bf_type = "embedding"  # ablation study
+norm2d_type = "BN"  # ablation study
+norm1d_type = "BN"
+is_total_separate = false   # ablation study
+is_u2 = true   # ablation study
+is_1dgate = true
+is_squeezed = false  # ablation study
+is_causal = true
+is_param_share = false   # ablation study
+
+[net.EaBNet.args]
+k1 = [2, 3]
+k2 = [1, 3]
+c = 64
+M = 6
+embed_dim = 64
+kd1 = 5
+cd1 = 64
+d_feat = 256
+p = 6
+q = 3
+is_causal = true
+is_u2 = true
+bf_type = "lstm"
+topo_type = "mimo"
+intra_connect = "cat"
+norm2d_type =  "BN"
+norm1d_type = "BN"
+
+[save]
+loss_filename = "librispeech_taylorbeamformer_mic_{linear}_mid_target_{timvdr}_order{0}_param_{nonshared}_bf_{embedding64}_hidnode_{64}_{u2}_{risqueezed}_norm2d_{BN}_norm1d_{BN}_causal_loss.mat"
+best_model_filename = "librispeech_taylorbeamformer_mic_{linear}_mid_target_{timvdr}_order{0}_param_{nonshared}_bf_{embedding64}_hidnode_{64}_{u2}_{risqueezed}_norm2d_{BN}_norm1d_{BN}_causal_model.pth"
+checkpoint_filename = "librispeech_taylorbeamformer_mic_{linear}_mid_target_{timvdr}_order{0}_param_{nonshared}_bf_{embedding64}_hidnode_{64}_{u2}_{risqueezed}_norm2d_{BN}_norm1d_{BN}_causal.pth.tar"
+logger_filename = "librispeech_taylorbeamformer_mic_{linear}_mid_target_{timvdr}_order{0}_param_{nonshared}_bf_{embedding64}_{hidnode}_{64}_{u2}_{risqueezed}_norm2d_{BN}_norm1d_{BN}_causal.txt"
+#tensorboard_filename = "librispeech_taylorbeamformer_mic_linear_mid_target_timvdr_order0_param_nonshared_bf_embedding64_hidnode_64_u2_risqueezed_norm2d_BN_norm1d_BN_causal"
+
+
+#loss_filename = "librispeech_baseline_EaBNet_BN_causal_loss.mat"
+#best_model_filename = "librispeech_baseline_EaBNet_BN_causal_model.pth"
+#checkpoint_filename = "librispeech_baseline_EaBNet_BN_causal_model.pth.tar"
