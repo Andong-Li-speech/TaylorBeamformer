@@ -1,1 +1,1 @@
-# TaylorBeamformer
+The implementation of the paper ''TaylorBeamformer: Learning All-Neural Beamformer for Multi-Channel Speech Enhancement from Taylor's Approximation Theory"[https://arxiv.org/abs/2203.07195v2], which is in submission to Interspeech2022.
