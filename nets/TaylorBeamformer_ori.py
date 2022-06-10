@@ -898,8 +898,8 @@ class BeamformingModule(nn.Module):
             #self.norm2 = nn.GroupNorm(1, inpt_dim//2)  # this type of layer-norm cannot guarantee causality in the inference
             self.norm1 = nn.LayerNorm([inpt_dim//2])
             self.norm2 = nn.LayerNorm([inpt_dim//2])
-            self.rnn1 = getattr(nn, rnn_type)(input_size=inpt_dim//2, hidden_size=hid_node, num_layers=2)
-            self.rnn2 = getattr(nn, rnn_type)(input_size=inpt_dim//2, hidden_size=hid_node, num_layers=2)
+            self.rnn1 = getattr(nn, rnn_type)(input_size=inpt_dim//2, hidden_size=hid_node, num_layers=2, batch_first=True)
+            self.rnn2 = getattr(nn, rnn_type)(input_size=inpt_dim//2, hidden_size=hid_node, num_layers=2, batch_first=True)
             self.pca_dnn = nn.Sequential(
                 nn.Linear(hid_node, hid_node),
                 nn.ReLU(True),
