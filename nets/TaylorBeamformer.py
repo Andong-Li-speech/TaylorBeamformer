@@ -891,7 +891,7 @@ class BeamformingModule(nn.Module):
 
         if bf_type in ["embedding", "generalized"]:
             self.norm = nn.LayerNorm([inpt_dim])
-            self.rnn = getattr(nn, rnn_type)(input_size=inpt_dim, hidden_size=hid_node, num_layers=2)
+            self.rnn = getattr(nn, rnn_type)(input_size=inpt_dim, hidden_size=hid_node, num_layers=2, batch_first=True)
             self.w_dnn = nn.Sequential(
                 nn.Linear(hid_node, hid_node),
                 nn.ReLU(True),
@@ -900,8 +900,8 @@ class BeamformingModule(nn.Module):
         elif bf_type == "mvdr":
             self.norm1 = nn.LayerNorm([inpt_dim//2])
             self.norm2 = nn.LayerNorm([inpt_dim//2])
-            self.rnn1 = getattr(nn, rnn_type)(input_size=inpt_dim//2, hidden_size=hid_node, num_layers=2)
-            self.rnn2 = getattr(nn, rnn_type)(input_size=inpt_dim//2, hidden_size=hid_node, num_layers=2)
+            self.rnn1 = getattr(nn, rnn_type)(input_size=inpt_dim//2, hidden_size=hid_node, num_layers=2, batch_first=True)
+            self.rnn2 = getattr(nn, rnn_type)(input_size=inpt_dim//2, hidden_size=hid_node, num_layers=2, batch_first=True)
             self.pca_dnn = nn.Sequential(
                 nn.Linear(hid_node, hid_node),
                 nn.ReLU(True),
